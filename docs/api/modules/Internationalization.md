@@ -4,7 +4,7 @@
 
 To enable internationalization modules can contain a locale directory in the root of
 the module. Messages for each locale should be stored in JSON files within
-the locale directory with filenames using the BCP-47 formatted language tag
+the locale directory with filenames using the [BCP-47](https://tools.ietf.org/html/bcp47) formatted language tag
 (e.g. en-US.json).
 
 **Contents**
@@ -20,7 +20,7 @@ the locale directory with filenames using the BCP-47 formatted language tag
 
 ## Locale Structure
 
-Following the below structure will allow [one-app-locale-bundler](https://github.com/americanexpress/one-app-cli/tree/master/packages/one-app-locale-bundler) to correctly
+Following the below structure will allow [`one-app-locale-bundler`](https://github.com/americanexpress/one-app-cli/tree/master/packages/one-app-locale-bundler) to correctly
 bundle your locale files.
 
 Module Root:
@@ -51,7 +51,8 @@ build
         └── qa.json
 ```
 
-The language pack itself needs to be a flat JSON object and will not work with a nested structure.
+> 💬 For use with [React Intl](https://github.com/formatjs/react-intl) the language pack needs
+> to be a flat JSON object and will not work with a nested structure.
 
 Example `en-US.json`:
 ```JSON
@@ -63,7 +64,7 @@ Example `en-US.json`:
 
 ### Environment Specific Data
 
-[one-app-locale-bundler](https://github.com/americanexpress/one-app-cli/tree/master/packages/one-app-locale-bundler) also allows your module to provide environment
+[`one-app-locale-bundler`](https://github.com/americanexpress/one-app-cli/tree/master/packages/one-app-locale-bundler) also allows your module to provide environment
 specific data. Currently One App supports three different environments;
 production, qa and integration (development).
 
@@ -145,21 +146,27 @@ Example `en-US/qa.json`:
 ### `ONE_CLIENT_LOCALE_FILENAME`
 
 One App uses the environment variable `ONE_CLIENT_LOCALE_FILENAME` to
-determine which language pack will be loaded. `ONE_CLIENT_LOCALE_FILENAME`
-must be one of `integration`, `qa`, or be `undefined` (for production).
+determine which language pack will be loaded *if using the environment
+specific language pack feature as described in the previous section*.
+`ONE_CLIENT_LOCALE_FILENAME` must be one of `integration`, `qa`, or
+be `undefined` (for production).
 
-By default the it will be `undefined` unless `NODE_ENV === 'development'`
-which will result it in being set to `integration`
+By default `ONE_CLIENT_LOCALE_FILENAME` will be `undefined` unless `NODE_ENV === 'development'`
+which will result it in being set to `integration`.
 
 Example:
 ```bash
 ONE_CLIENT_LOCALE_FILENAME=integration
 ```
 
-## Loading Language Packs
+## Managing Language Pack data
 
-One App uses [one-app-ducks intl duck](https://github.com/americanexpress/one-app-ducks#intl-duck) to manage
-the loading of each modules language pack.
+One App uses the [`one-app-ducks` intl duck](https://github.com/americanexpress/one-app-ducks#intl-duck)
+to manage the loading of each module's language pack.
+
+### Reducer
+
+Please see the documentation on [Shared Ducks](./state-management.md#intl-duck) for information on how One App makes use of One App Duck's Intl Duck.
 
 ### Action Creators
 
@@ -167,30 +174,29 @@ the loading of each modules language pack.
 
 Used for fetching a module's language pack.
 
-Please see one-app-ducks [loadLanguagePack](https://github.com/americanexpress/one-app-ducks#loadlanguagepack) for information.
+Please see One App Duck's [loadLanguagePack](https://github.com/americanexpress/one-app-ducks#loadlanguagepack) for information.
 
 #### `queryLanguagePack`
 
 The [Iguazu](https://github.com/americanexpress/iguazu) equivalent of [`loadLanguagePack`](#loadlanguagepack).
 
-Please see one-app-ducks [queryLanguagePack](https://github.com/americanexpress/one-app-ducks#querylanguagepack) for information.
+Please see One App Duck's [queryLanguagePack](https://github.com/americanexpress/one-app-ducks#querylanguagepack) for information.
 
 #### `updateLocale`
 
 Used to set the active locale for One App.
 
-Please see one-app-ducks [updateLocale](https://github.com/americanexpress/one-app-ducks#updatelocale) for information.
+Please see One App Duck's [updateLocale](https://github.com/americanexpress/one-app-ducks#updatelocale) for information.
 
 #### `getLocalePack`
 
 Loads the locale of the requested country closest to the active locale. Used directly by One App.
 
-Please see one-app-ducks [getLocalePack](https://github.com/americanexpress/one-app-ducks#getlocalepack) for information.
+Please see One App Duck's [getLocalePack](https://github.com/americanexpress/one-app-ducks#getlocalepack) for information.
 
 
 **📘 More Information**
-* Language packs compatible with [`react-intl`](https://github.com/formatjs/react-intl),
-* See Cultured Frankie for an example [`CulturedFrankie`](../../../prod-sample/sample-modules/cultured-frankie/0.0.0/src/components/CulturedFrankie.jsx),
+* To see an example of using [`react-intl`](https://github.com/formatjs/react-intl) within a module see [`CulturedFrankie`](../../../prod-sample/sample-modules/cultured-frankie/0.0.0/src/components/CulturedFrankie.jsx),
 
 
 [☝️ Return To Top](#internationalization)
