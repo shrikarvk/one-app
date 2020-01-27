@@ -9,13 +9,13 @@ the locale directory with filenames using the [BCP-47](https://tools.ietf.org/ht
 
 **Contents**
 * [Locale Structure](#locale-structure)
-  - * [Environment Specific Data](#environment-specific-data)
-  - * [ONE_CLIENT_LOCALE_FILENAME](#`ONE_CLIENT_LOCALE_FILENAME`)
+  * [Environment Specific Data](#environment-specific-data)
+  * [ONE_CLIENT_LOCALE_FILENAME](#ONE_CLIENT_LOCALE_FILENAME)
 * [Loading Language Packs](#loading-language-packs)
-  - * [`loadLanguagePack`](#`loadLanguagePack`)
-  - * [`queryLanguagePack`](#`queryLanguagePack`)
-  - * [`updateLocale`](#`updateLocale`)
-  - * [`getLocalePack`](#`getLocalePack`)
+  * [`loadLanguagePack`](#loadLanguagePack)
+  * [`queryLanguagePack`](#queryLanguagePack)
+  * [`updateLocale`](#updateLocale)
+  * [`getLocalePack`](#getLocalePack)
 
 
 ## Locale Structure
@@ -26,12 +26,13 @@ bundle your locale files.
 Module Root:
 ```
 module
-└── locale
-| └── en-US.json
-| └── es-MX.json
-|── src
-|   └── index.js
-└── package.json
+├── README.md
+├── locale
+|   └── en-US.json
+|   └── es-MX.json
+├── package.json
+└── src
+    └── index.js
 ```
 
 This will result in:
@@ -41,11 +42,11 @@ build
     ├── <moduleName>.browser.js
     ├── <moduleName>.legacy.browser.js
     ├── <moduleName>.node.js
-    └── en-us
-    |    ├── <moduleName>.json
-    |    ├── integration.json
-    |    └── qa.json
-    └──es-MX
+    ├── en-us
+    |   ├── <moduleName>.json
+    |   ├── integration.json
+    |   └── qa.json
+    └── es-mx
         ├── <moduleName>.json
         ├── integration.json
         └── qa.json
@@ -68,22 +69,28 @@ Example `en-US.json`:
 specific data. Currently One App supports three different environments;
 production, qa and integration (development).
 
-Below is an example of how you could include link specific data.
+The directory name is what defines the key the data goes under,
+below is an example of how you could include "link" specific data.
+
 
 Module Root:
 ```
 module
-└── locale
-| └── en-US
-|     └── links
-|     |   └── production.json
-|     |   └── qa.json
-|     |   └── integration.json
-|     └── copy.json
-| └── es-MX.json
-|── src
-|   └── index.js
-└── package.json
+├── README.md
+├── locale
+|   └── en-US
+|   |   ├── links
+|   |   |   └── production.json
+|   |   |   └── qa.json
+|   |   |   └── integration.json
+|   |   └── copy.json
+|   └── es-mx.json
+|       ├── <moduleName>.json
+|       ├── integration.json
+|       └── qa.json
+├── package.json
+└── src
+    └── index.js
 ```
 
 Example `en-US/copy.json`:
@@ -122,11 +129,11 @@ build
     ├── <moduleName>.browser.js
     ├── <moduleName>.legacy.browser.js
     ├── <moduleName>.node.js
-    └── en-us
-    |    ├── <moduleName>.json
-    |    ├── integration.json
-    |    └── qa.json
-    └──es-MX
+    ├── en-us
+    |   ├── <moduleName>.json
+    |   ├── integration.json
+    |   └── qa.json
+    └── es-mx
         ├── <moduleName>.json
         ├── integration.json
         └── qa.json
