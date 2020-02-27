@@ -1179,7 +1179,8 @@ describe('heapdump', () => {
     // the signal being finished
     const signalPromise = sendSignal('one-app', 'SIGUSR2');
     const aboutToWriteRaw = await searchForNextLogMatch(/about to write a heapdump to .+/);
-    const didWriteRaw = await searchForNextLogMatch(/wrote heapdump out to .+/, 20e3);
+    // slower in Travis than on local machines
+    const didWriteRaw = await searchForNextLogMatch(/wrote heapdump out to .+/, 60e3);
     await signalPromise;
     const dirContents = await fs.readdir(tmpMountDir);
 
