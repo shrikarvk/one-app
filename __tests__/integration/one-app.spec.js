@@ -1175,14 +1175,14 @@ describe('heapdump', () => {
 
   it('writes a heapdump to /tmp on a SIGUSR2 signal', async () => {
     const tmpMountDir = path.resolve(__dirname, '../../prod-sample/one-app/tmp');
-    // first log is written pretty quickly so don't block looking at the logs on
-    // the signal being finished
-    const signalPromise = sendSignal('one-app', 'SIGUSR2');
-    const aboutToWriteRaw = await searchForNextLogMatch(/about to write a heapdump to .+/);
+    // set up log watchers first to avoid semblance of a race condition
+    const aboutToWritePromise = searchForNextLogMatch(/about to write a heapdump to .+/);
     // slower in Travis than on local machines
-    const didWriteRaw = await searchForNextLogMatch(/wrote heapdump out to .+/, 60e3);
-    await signalPromise;
-    const dirContents = await fs.readdir(tmpMountDir);
+    const didWritePromise = searchForNextLogMatch(/wrote heapdump out to .+/, 60e3);
+    await sendSignal('one-app', 'SIGUSR2');
+
+    const aboutToWriteRaw = await aboutToWritePromise;
+    const didWriteRaw = await didWritePromise;
 
     const aboutToWriteFilePath = aboutToWriteRaw
       .replace(/^about to write a heapdump to /, '')
@@ -1195,6 +1195,7 @@ describe('heapdump', () => {
     expect(aboutToWriteFilePath).toEqual(didWriteFilePath);
     expect(path.dirname(didWriteFilePath)).toBe('/tmp');
     const didWriteFile = path.basename(didWriteFilePath);
+    const dirContents = await fs.readdir(tmpMountDir);
     expect(dirContents).toContain(didWriteFile);
 
     const { size } = await fs.stat(path.join(tmpMountDir, didWriteFile));
