@@ -1178,7 +1178,7 @@ describe('heapdump', () => {
     // set up log watchers first to avoid semblance of a race condition
     const aboutToWritePromise = searchForNextLogMatch(/about to write a heapdump to .+/);
     // slower in Travis than on local machines
-    const didWritePromise = searchForNextLogMatch(/wrote heapdump out to .+/, 60e3);
+    const didWritePromise = searchForNextLogMatch(/wrote heapdump out to .+/, 120e3);
     await sendSignal('one-app', 'SIGUSR2');
 
     const aboutToWriteRaw = await aboutToWritePromise;
