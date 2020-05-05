@@ -1,6 +1,6 @@
 {
   "name": "@americanexpress/one-app",
-  "version": "5.0.0-rc.1",
+  "version": "5.0.0-rc.2",
   "description": "One Amex SPA technology stack.",
   "main": "index.js",
   "engines": {
@@ -95,6 +95,8 @@
     "ip": "^1.1.5",
     "lean-intl": "^4.2.2",
     "matcher": "^2.1.0",
+    "opossum": "^5.0.0",
+    "opossum-prometheus": "^0.1.0",
     "pidusage": "^2.0.17",
     "prom-client": "^11.5.3",
     "prometheus-gc-stats": "^0.6.2",
