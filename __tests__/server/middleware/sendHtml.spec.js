@@ -193,7 +193,7 @@ describe('sendHtml', () => {
     req = jest.fn();
     req.headers = {
       // we need a legitimate user-agent string here to test between modern and legacy browsers
-      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
+      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
     };
 
     res = jest.fn();
