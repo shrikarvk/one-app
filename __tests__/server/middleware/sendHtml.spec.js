@@ -86,7 +86,8 @@ jest.mock('../../../src/server/middleware/pwa', () => ({
   getClientPWAConfig: jest.fn(() => ({
     serviceWorker: false,
     serviceWorkerScope: null,
-    serviceWorkerScriptUrl: null,
+    serviceWorkerScriptUrl: false,
+    webManifestUrl: false,
   })),
 }));
 jest.mock('../../../src/universal/ducks/config');
@@ -252,7 +253,8 @@ describe('sendHtml', () => {
     });
 
     it('sends a rendered page with the __holocron_module_bundle_type__ global set according to the user agent and the client module map that only includes the relevant details', () => {
-      req.headers['user-agent'] = 'Browser/5.0 (compatible; NUEI 100.0; Doors TX 81.4; Layers/1.0)';
+      // MSIE indicates legacy IE
+      req.headers['user-agent'] = 'Browser/5.0 (compatible; MSIE 100.0; Doors TX 81.4; Layers/1.0)';
       sendHtml(req, res);
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send.mock.calls[0][0]).toContain('<!DOCTYPE html>');
@@ -318,7 +320,8 @@ describe('sendHtml', () => {
     });
 
     it('sends a rendered page with the legacy app bundle according to the user agent', () => {
-      req.headers['user-agent'] = 'Browser/5.0 (compatible; NUEI 100.0; Doors TX 81.4; Layers/1.0)';
+      // rv:11 indicates IE 11  on mobile
+      req.headers['user-agent'] = 'Browser/5.0 (compatible; NUEI 100.0; Doors TX 81.4; rv:11)';
       sendHtml(req, res);
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send.mock.calls[0][0]).toContain('<script src="/cdnUrl/app/1.2.3-rc.4-abc123/legacy/bundle~common.js" integrity="abc" crossorigin="anonymous"></script>');
@@ -415,18 +418,20 @@ describe('sendHtml', () => {
       it('includes __pwa_metadata__ with disabled values', () => {
         sendHtml(req, res);
         expect(res.send).toHaveBeenCalledTimes(1);
-        expect(/window\.__pwa_metadata__ = {"serviceWorker":false,"serviceWorkerScope":null,"serviceWorkerScriptUrl":null};/.test(res.send.mock.calls[0][0])).toBe(true);
+        expect(/window\.__pwa_metadata__ = {"serviceWorker":false,"serviceWorkerScope":null,"serviceWorkerScriptUrl":false};/.test(res.send.mock.calls[0][0])).toBe(true);
       });
 
       it('includes __pwa_metadata__ with enabled values', () => {
         getClientPWAConfig.mockImplementationOnce(() => ({
           serviceWorker: true,
           serviceWorkerScope: '/',
-          serviceWorkerScriptUrl: '/sw.js',
+          serviceWorkerScriptUrl: '/_/pwa/service-worker.js',
+          webManifestUrl: '/_/pwa/manifest.webmanifest',
         }));
         sendHtml(req, res);
         expect(res.send).toHaveBeenCalledTimes(1);
-        expect(/window\.__pwa_metadata__ = {"serviceWorker":true,"serviceWorkerScope":"\/","serviceWorkerScriptUrl":"\/sw\.js"};/.test(res.send.mock.calls[0][0])).toBe(true);
+        expect(/window\.__pwa_metadata__ = {"serviceWorker":true,"serviceWorkerScope":"\/","serviceWorkerScriptUrl":"\/_\/pwa\/service-worker\.js"};/.test(res.send.mock.calls[0][0])).toBe(true);
+        expect(/<link rel="manifest" href="\/_\/pwa\/manifest\.webmanifest">/.test(res.send.mock.calls[0][0])).toBe(true);
       });
     });
 

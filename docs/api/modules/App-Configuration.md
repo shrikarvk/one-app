@@ -1,8 +1,8 @@
-[👈 Return to Overview](../API.md)
+[👈 Return to Overview](../README.md)
 
 # App Configuration
 
-The App Configuration API, `appConfig` allows a module to specify a selection of configuration options for [Holocron Modules](../API.md#modules).
+The App Configuration API, `appConfig` allows a module to specify a selection of configuration options for [Holocron Modules](../README.md#modules).
 
 ```js
 // Force tree shaking appConfig away in client bundles
@@ -14,12 +14,12 @@ if (!global.BROWSER) {
     corsOrigins,
     configureRequestLog,
     extendSafeRequestRestrictedAttributes,
+    pwa,
     createSsrFetch,
+    eventLoopDelayThreshold,
     /* Child Module Specific */
     validateStateConfig,
     requiredSafeRequestRestrictedAttributes,
-    /* All Modules */
-    appCompatibility,
   };
 }
 ```
@@ -27,11 +27,31 @@ if (!global.BROWSER) {
 In practice, we declare an `appConfig` as a static attached to the parent React
 Component in a One App Module. The `appConfig` settings are intended for the
 Server only and is invoked and validated on the initial load of the Module on
-the Server. For performance and security purposes, we recommend wrapping this
+the Server.
+
+**⚠️ Please Consider**
+
+For performance and security purposes, we recommend wrapping this
 logic in an `if (!global.BROWSER)` block, to only bundle `appConfig` inside the
 Node Bundle (e.g.`mymodule.node.js`) rather than the Browser Bundles (e.g.
 `mymodule.browser.js` or `mymodule.legacy.js`). This is good practice for
 security and bundle size considerations.
+
+`src/index.js`
+```js
+import MyModule from './components/MyModule';
+
+if (!global.BROWSER) {
+  // To prevent server side configuration from being exposed,
+  // make sure to isolate your configuration since it may be
+  // sensitive and should be guarded with `!global.BROWSER`
+
+  // eslint-disable-next-line global-require
+  MyModule.appConfig = require('./appConfig').default;
+}
+
+export default MyModule;
+```
 
 **Contents**
 - `Module.appConfig`
@@ -42,9 +62,9 @@ security and bundle size considerations.
   - [`configureRequestLog`](#configurerequestlog)
   - [`extendSafeRequestRestrictedAttributes`](#extendsaferequestrestrictedattributes)
   - [`createSsrFetch`](#createssrfetch)
+  - [`eventLoopDelayThreshold`](#eventloopdelaythreshold)
   - [`validateStateConfig`](#validatestateconfig)
   - [`requiredSafeRequestRestrictedAttributes`](#requiredsaferequestrestrictedattributes)
-  - [`appCompatibility`](#appcompatibility)
 
 ## `provideStateConfig`
 **Module Type**
@@ -213,6 +233,11 @@ For the variety of service workers available, we have control to set its
 `scope` with the desired pathname and assign what url base the service worker
 can oversee.
 
+The `webManifest` key is used to set up a [Web App Manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+as part of the PWA group of technologies. It allows `one-app` to be installed onto a device
+with support for a more native experience using web technologies. The `webManifest` can also
+be a `Function` and is passed the `clientConfig` as the only argument.
+
 **Shape**
 ```js
 if (!global.BROWSER) {
@@ -229,6 +254,33 @@ if (!global.BROWSER) {
       escapeHatch: false,
       // we can optionally define a scope to use with the service worker
       scope: '/',
+      // the web app manifest can be directly incorporated in the PWA config
+      webManifest: (clientConfig) => ({
+        // the full name is the official name of a given PWA
+        name: 'My App Name',
+        // the short name is used by mobile devices to label your home screen icon
+        short_name: 'My App',
+        // the description is a good piece of meta-data to include for a short description
+        // which can be used with presenting your PWA
+        description: 'My PWA app.',
+        // relative to the root of the domain
+        start_url: '/home',
+        // when installing your PWA, standalone display will have a native feel
+        // and removes the browser bar for full screen
+        display: 'standalone',
+        // the background color
+        background_color: '#fff',
+        // the theme color is what covers native UI elements that host the PWA
+        theme_color: '#000',
+        // icons can perform many purposes, including the splash screen when a web app is loading
+        icons: [
+          {
+            src: `${clientConfig.cdnUrl}/my-splash-icon.png`,
+            sizes: '48x48',
+            type: 'image/png',
+          },
+        ],
+      }),
     },
   };
 }
@@ -237,6 +289,8 @@ if (!global.BROWSER) {
 **📘 More Information**
 * Environment Variable: [`ONE_SERVICE_WORKER`](../server/Environment-Variables.md#one_service_worker)
 * Example: [Frank Lloyd Root's `pwa` config](../../../prod-sample/sample-modules/frank-lloyd-root/0.0.3/src/pwa.js)
+* Service Worker: [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
+* Web App Manifest: [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/Manifest)
 
 ## `configureRequestLog`
 **Module Type**
@@ -431,34 +485,6 @@ If an `Error` is thrown due to missing required cookies or headers, the Server w
 **📘 More Information**
 * [`extendSafeRequestRestrictedAttributes`](#extendsaferequestrestrictedattributes)
 * Example: [Vitruvius Franklin's `appConfig`](../../../prod-sample/sample-modules/vitruvius-franklin/0.0.0/src/components/VitruviusFranklin.jsx)
-
-## `appCompatibility`
-**Module Type**
-* ✅ Root Module
-* ✅ Child Module
-
-**Shape**
-```js
-if (!global.BROWSER) {
-  Module.appConfig = {
-    appCompatibility: String,
-  };
-}
-```
-
-The `appCompatibility` directive accepts a valid [Semantic Version](https://github.com/npm/node-semver) string specifying compatibility with specific One App versions.
-
-For example, we may specify Modules to be compatible with all `v5` releases of One App:
-
-```js
-if (!global.BROWSER) {
-  Module.appConfig = {
-    appCompatibility: '5.x.x',
-  };
-}
-```
-
-If the One App version fails a Module's `appCompatibility` check, the Server will fail to startup or if already running will prevent [Holocron](https://github.com/americanexpress/holocron) from loading the Module dynamically.
 
 **📘 More Information**
 * [Node Semver](https://github.com/npm/node-semver)
