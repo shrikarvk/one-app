@@ -54,6 +54,7 @@ jest.mock('../../../src/server/middleware/pwa', () => ({
 }));
 
 const RootModule = () => <h1>Hello, world</h1>;
+RootModule[CONFIGURATION_KEY] = {};
 const csp = "default: 'none'";
 describe('onModuleLoad', () => {
   const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => null);
