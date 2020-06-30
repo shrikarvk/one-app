@@ -24,7 +24,6 @@ import { setConfigureRequestLog } from './logging/serverMiddleware';
 import { setCreateSsrFetch } from './createSsrFetch';
 import { setEventLoopDelayThreshold } from './createCircuitBreaker';
 import { configurePWA } from '../middleware/pwa';
-import { updateCSP } from '../middleware/csp';
 import { validateRootModuleAppConfig, validateChildModuleAppConfig } from './validation';
 
 // Trim build hash
@@ -85,7 +84,6 @@ export default function onModuleLoad({
   if (moduleName === serverStateConfig.rootModuleName) {
     const {
       provideStateConfig,
-      csp,
       corsOrigins,
       configureRequestLog,
       extendSafeRequestRestrictedAttributes,
@@ -98,7 +96,6 @@ export default function onModuleLoad({
     if (provideStateConfig) {
       setStateConfig(provideStateConfig);
     }
-    updateCSP(csp);
     setCorsOrigins(corsOrigins);
     extendRestrictedAttributesAllowList(extendSafeRequestRestrictedAttributes);
     setConfigureRequestLog(configureRequestLog);
