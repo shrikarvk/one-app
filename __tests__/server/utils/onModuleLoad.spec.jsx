@@ -17,6 +17,7 @@
 import React from 'react';
 import { preprocessEnvVar } from '@americanexpress/env-config-utils';
 import { META_DATA_KEY } from '@americanexpress/one-app-bundler';
+import { getModule } from 'holocron';
 import onModuleLoad, {
   setModulesUsingExternals,
   getModulesUsingExternals,
@@ -32,12 +33,13 @@ import { setCreateSsrFetch } from '../../../src/server/utils/createSsrFetch';
 import { getEventLoopDelayThreshold } from '../../../src/server/utils/createCircuitBreaker';
 import { configurePWA } from '../../../src/server/middleware/pwa';
 
+jest.mock('@americanexpress/env-config-utils');
+jest.mock('holocron');
 jest.mock('../../../src/server/utils/stateConfig', () => ({
   setStateConfig: jest.fn(),
   getClientStateConfig: jest.fn(),
   getServerStateConfig: jest.fn(() => ({ rootModuleName: 'root-module' })),
 }));
-jest.mock('@americanexpress/env-config-utils');
 jest.mock('../../../src/server/utils/readJsonFile', () => () => ({ buildVersion: '4.43.0-0-38f0178d' }));
 jest.mock('../../../src/server/middleware/conditionallyAllowCors', () => ({
   setCorsOrigins: jest.fn(),
@@ -61,8 +63,8 @@ describe('onModuleLoad', () => {
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => null);
 
   beforeEach(() => {
-    global.getTenantRootModule = () => RootModule;
     jest.resetAllMocks();
+    getModule.mockImplementation(() => RootModule);
     getServerStateConfig.mockImplementation(() => ({
       rootModuleName: 'some-root',
     }));
