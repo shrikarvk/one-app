@@ -14,6 +14,7 @@
  * permissions and limitations under the License.
  */
 
+import { getModule } from 'holocron';
 import { META_DATA_KEY } from '@americanexpress/one-app-bundler';
 
 import { setStateConfig, getClientStateConfig, getServerStateConfig } from './stateConfig';
@@ -103,7 +104,8 @@ export default function onModuleLoad({
     setEventLoopDelayThreshold(eventLoopDelayThreshold);
     configurePWA(pwa);
   } else {
-    const RootModule = global.getTenantRootModule();
+    // root module should be the first to be loaded
+    const RootModule = getModule(serverStateConfig.rootModuleName);
     const { providedExternals } = RootModule[CONFIGURATION_KEY];
     validationContext.providedExternals = { ...providedExternals };
 
