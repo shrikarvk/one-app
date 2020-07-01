@@ -276,7 +276,7 @@ describe('createRequestHtmlFragment', () => {
   });
 
   it('should fall back when the circuit opens', async () => {
-    expect.assertions(5);
+    expect.assertions(6);
     const createRequestHtmlFragment = require(
       '../../../src/server/middleware/createRequestHtmlFragment'
     ).default;
@@ -289,6 +289,7 @@ describe('createRequestHtmlFragment', () => {
     expect(renderForStringSpy).not.toHaveBeenCalled();
     expect(renderForStaticMarkupSpy).not.toHaveBeenCalled();
     expect(req.appHtml).toBe('');
+    expect(req.renderMode).toBe('render');
   });
 
   it('should not use the circuit breaker for partials', async () => {

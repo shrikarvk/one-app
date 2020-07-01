@@ -88,6 +88,7 @@ export default function createRequestHtmlFragment({ createRoutes }) {
         if (fallback) {
           req.appHtml = '';
           req.helmetInfo = {};
+          req.renderMode = 'render';
           return next();
         }
       }
